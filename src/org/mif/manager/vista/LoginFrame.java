@@ -5,6 +5,7 @@
 package org.mif.manager.vista;
 
 import org.mif.manager.interficiepersistencia.GestorBDManagerException;
+import org.mif.manager.interficiepersistencia.IGestorBDManager;
 
 
 
@@ -12,8 +13,10 @@ import org.mif.manager.interficiepersistencia.GestorBDManagerException;
  *
  * @author marks
  */
-public class LoginFrame extends javax.swing.JFrame {
-
+public class LoginFrame extends javax.swing.JFrame
+{
+    IGestorBDManager gbd = Utils.getGBD();
+    
     /**
      * Creates new form LoginFrame
      */
@@ -52,12 +55,6 @@ public class LoginFrame extends javax.swing.JFrame {
         setTitle("Login");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setResizable(false);
-
-        userField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                userFieldActionPerformed(evt);
-            }
-        });
 
         jLabel1.setText("Contrasenya:");
 
@@ -118,17 +115,13 @@ public class LoginFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void userFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_userFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_userFieldActionPerformed
-
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
         String login = userField.getText();
         String password = new String(pswdField.getPassword());
         
         try 
         {
-           if (Utils.gBD.loginUsuari(login, password) == 1)
+           if (gbd.loginUsuari(login, password) == 1)
            {
                SelTempFrame tempsFrame = new SelTempFrame();
                tempsFrame.setVisible(true);

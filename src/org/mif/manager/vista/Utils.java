@@ -11,16 +11,17 @@ import java.util.logging.Level;
 import org.mif.manager.interficiepersistencia.IGestorBDManager;
 import org.mif.manager.interficiepersistencia.GestorBDManagerException;
 import org.mif.manager.model.Categoria;
+import org.mif.manager.model.Equip;
 import org.mif.manager.model.Temporada;
 
 /**
- * Classe Utils per a que els JFrames facin ús de funcions/variables/constants
+ * Classe Utils per a que els JFrames facin ús de certes funcions/variables/constants
  * https://stackoverflow.com/questions/10425962/java-access-main-class-variables
  * @author marks
  */
 public class Utils
 {
-    public static IGestorBDManager gBD = null;
+    private static IGestorBDManager gBD = null;
     private static List<Temporada> temporades = new ArrayList<>();
     private static Temporada tempAct = null;
     private static List<Categoria> categories = new ArrayList<>();
@@ -63,11 +64,31 @@ public class Utils
     {
         try
         {
-            gBD.obtenirTemporades();
+            temporades = gBD.obtenirTemporades();
         }
         catch (GestorBDManagerException ex)
         {
             Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public static void setTemporadaActual(Temporada t)
+    {
+        tempAct = t;
+    }
+    
+    public static List<Equip> obtenirEquips(Temporada t)
+    {
+        List<Equip> eqs = new ArrayList<>();
+        
+        try {
+            eqs = gBD.obtenirEquips(getTemporadaActual());
+        }
+        catch (GestorBDManagerException ex)
+        {
+            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return eqs;
     }
 }
