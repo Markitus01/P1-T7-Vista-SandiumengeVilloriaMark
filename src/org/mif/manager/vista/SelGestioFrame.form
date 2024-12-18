@@ -29,12 +29,6 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <Component id="jScrollPane2" min="-2" pref="302" max="-2" attributes="0"/>
-                      <EmptySpace pref="13" max="32767" attributes="0"/>
-                      <Component id="jScrollPane1" min="-2" pref="302" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="77" max="-2" attributes="0"/>
                       <Component id="gestEquipButton1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
@@ -42,11 +36,25 @@
                       <EmptySpace min="-2" pref="81" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="enrereButton" min="-2" max="-2" attributes="0"/>
-                          <Component id="infoGestio" alignment="0" min="-2" max="-2" attributes="0"/>
-                      </Group>
+                      <Component id="enrereButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="118" max="-2" attributes="0"/>
+                      <Component id="infoGestio" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="1" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="jScrollPane2" min="-2" pref="302" max="-2" attributes="0"/>
+                              <EmptySpace min="0" pref="1" max="32767" attributes="0"/>
+                          </Group>
+                          <Component id="equipsLabel" alignment="1" max="32767" attributes="0"/>
+                      </Group>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="jugadorsLabel" max="32767" attributes="0"/>
+                          <Component id="jScrollPane1" pref="302" max="32767" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
           </Group>
@@ -56,10 +64,16 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="enrereButton" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
-              <Component id="infoGestio" min="-2" max="-2" attributes="0"/>
-              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="enrereButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="infoGestio" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Component id="jugadorsLabel" min="-2" pref="15" max="-2" attributes="0"/>
+                  <Component id="equipsLabel" min="-2" pref="15" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
                   <Component id="jScrollPane1" min="-2" pref="159" max="-2" attributes="0"/>
                   <Component id="jScrollPane2" min="-2" pref="159" max="-2" attributes="0"/>
@@ -69,7 +83,7 @@
                   <Component id="gestEquipButton1" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="gestJugsButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="49" max="32767" attributes="0"/>
+              <EmptySpace pref="66" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -128,7 +142,7 @@
     <Component class="javax.swing.JLabel" name="infoGestio">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="&quot;Mostrant equips i jugadors de la &quot;+ Utils.getTemporadaActual()&#xd;&#xa;" type="code"/>
+          <Connection code="&quot;Mostrant equips i jugadors de la &quot;+ Utils.getTemporadaActual()" type="code"/>
         </Property>
       </Properties>
     </Component>
@@ -155,6 +169,20 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="enrereButtonActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jugadorsLabel">
+      <Properties>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="0" green="0" red="ff" type="rgb"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="equipsLabel">
+      <Properties>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="0" green="0" red="ff" type="rgb"/>
+        </Property>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

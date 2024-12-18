@@ -16,6 +16,7 @@ import org.mif.manager.model.Jugador;
 public class SelGestioFrame extends javax.swing.JFrame
 {
     private DefaultListModel<Equip> equipsListModel = new DefaultListModel<>();
+    private DefaultListModel<Jugador> jugadorsListModel = new DefaultListModel<>();
     
     /**
      * Idea per gestionar les llistes treta de:
@@ -25,6 +26,7 @@ public class SelGestioFrame extends javax.swing.JFrame
     {
         initComponents();
         equipsList.setModel(equipsListModel);
+        jugadorList.setModel(jugadorsListModel);
         carregarLlistes();
     }
 
@@ -45,6 +47,8 @@ public class SelGestioFrame extends javax.swing.JFrame
         gestJugsButton = new javax.swing.JButton();
         gestEquipButton1 = new javax.swing.JButton();
         enrereButton = new javax.swing.JButton();
+        jugadorsLabel = new javax.swing.JLabel();
+        equipsLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Escollir Gestió");
@@ -58,8 +62,7 @@ public class SelGestioFrame extends javax.swing.JFrame
         equipsList.setFocusable(false);
         jScrollPane2.setViewportView(equipsList);
 
-        infoGestio.setText("Mostrant equips i jugadors de la "+ Utils.getTemporadaActual()
-        );
+        infoGestio.setText("Mostrant equips i jugadors de la "+ Utils.getTemporadaActual());
 
         gestJugsButton.setText("Gestionar Jugadors");
         gestJugsButton.addActionListener(new java.awt.event.ActionListener() {
@@ -82,6 +85,10 @@ public class SelGestioFrame extends javax.swing.JFrame
             }
         });
 
+        jugadorsLabel.setForeground(new java.awt.Color(255, 0, 0));
+
+        equipsLabel.setForeground(new java.awt.Color(255, 0, 0));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -90,30 +97,40 @@ public class SelGestioFrame extends javax.swing.JFrame
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
-                    .addGroup(layout.createSequentialGroup()
                         .addGap(77, 77, 77)
                         .addComponent(gestEquipButton1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(gestJugsButton)
                         .addGap(81, 81, 81))
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(enrereButton)
+                        .addGap(118, 118, 118)
+                        .addComponent(infoGestio)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(enrereButton)
-                            .addComponent(infoGestio))
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 1, Short.MAX_VALUE))
+                            .addComponent(equipsLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jugadorsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE))
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(enrereButton)
-                .addGap(41, 41, 41)
-                .addComponent(infoGestio)
-                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(enrereButton)
+                    .addComponent(infoGestio))
+                .addGap(38, 38, 38)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jugadorsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(equipsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -121,7 +138,7 @@ public class SelGestioFrame extends javax.swing.JFrame
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(gestEquipButton1)
                     .addComponent(gestJugsButton))
-                .addContainerGap(49, Short.MAX_VALUE))
+                .addContainerGap(66, Short.MAX_VALUE))
         );
 
         pack();
@@ -134,11 +151,15 @@ public class SelGestioFrame extends javax.swing.JFrame
     }//GEN-LAST:event_enrereButtonActionPerformed
 
     private void gestEquipButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gestEquipButton1ActionPerformed
-        // TODO add your handling code here:
+        GestEquipsFrame equipsFrame = new GestEquipsFrame();
+        equipsFrame.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_gestEquipButton1ActionPerformed
 
     private void gestJugsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gestJugsButtonActionPerformed
-        // TODO add your handling code here:
+        GestJugsFrame jugsFrame = new GestJugsFrame();
+        jugsFrame.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_gestJugsButtonActionPerformed
 
     /**
@@ -147,16 +168,28 @@ public class SelGestioFrame extends javax.swing.JFrame
     private void carregarLlistes()
     {
         List<Equip> equips = Utils.obtenirEquips(Utils.getTemporadaActual());
+        List<Jugador> jugadors = Utils.obtenirJugadors();
 
         System.out.println(equips.toString());
         
-        if (equips == null || equips.isEmpty())
+        if (equips.isEmpty())
         {
-            System.out.println("No hi han equips per aquesta temporada.");
+            equipsLabel.setText("No hi han equips aquesta temporada");
+        }
+        
+        if (jugadors.isEmpty())
+        {
+            jugadorsLabel.setText("No hi han jugadors a la bd");
         }
 
-        for (Equip equip : equips) {
+        for (Equip equip : equips)
+        {
             equipsListModel.addElement(equip);
+        }
+        
+        for (Jugador jugador : jugadors)
+        {
+            jugadorsListModel.addElement(jugador);
         }
     }
     
@@ -198,6 +231,7 @@ public class SelGestioFrame extends javax.swing.JFrame
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton enrereButton;
+    private javax.swing.JLabel equipsLabel;
     private javax.swing.JList<Equip> equipsList;
     private javax.swing.JButton gestEquipButton1;
     private javax.swing.JButton gestJugsButton;
@@ -205,5 +239,6 @@ public class SelGestioFrame extends javax.swing.JFrame
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JList<Jugador> jugadorList;
+    private javax.swing.JLabel jugadorsLabel;
     // End of variables declaration//GEN-END:variables
 }

@@ -42,8 +42,7 @@ public class LoginFrame extends javax.swing.JFrame
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         loginButton = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        textInfo = new javax.swing.JTextArea();
+        infoLabel = new javax.swing.JLabel();
 
         jMenu1.setText("jMenu1");
 
@@ -67,10 +66,7 @@ public class LoginFrame extends javax.swing.JFrame
             }
         });
 
-        textInfo.setEditable(false);
-        textInfo.setColumns(20);
-        textInfo.setRows(5);
-        jScrollPane2.setViewportView(textInfo);
+        infoLabel.setForeground(new java.awt.Color(255, 0, 0));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -79,25 +75,27 @@ public class LoginFrame extends javax.swing.JFrame
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(147, 147, 147)
+                        .addGap(149, 149, 149)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel1)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(pswdField)
-                                .addComponent(userField, javax.swing.GroupLayout.PREFERRED_SIZE, 277, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addComponent(userField, javax.swing.GroupLayout.PREFERRED_SIZE, 277, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(75, 75, 75)
+                                .addComponent(loginButton, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(222, 222, 222)
-                        .addComponent(loginButton, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(78, 78, 78)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 418, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(85, Short.MAX_VALUE))
+                        .addGap(190, 190, 190)
+                        .addComponent(infoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(155, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(54, 54, 54)
+                .addGap(35, 35, 35)
+                .addComponent(infoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(userField, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -107,9 +105,7 @@ public class LoginFrame extends javax.swing.JFrame
                 .addComponent(pswdField, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(35, 35, 35)
                 .addComponent(loginButton, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(13, Short.MAX_VALUE))
+                .addContainerGap(78, Short.MAX_VALUE))
         );
 
         pack();
@@ -130,13 +126,13 @@ public class LoginFrame extends javax.swing.JFrame
            }
            else
            {
-               textInfo.setText("Credencials incorrectes!");
+               infoLabel.setText("Credencials incorrectes!");
            }
         }
         catch (GestorBDManagerException ex)
         {
             
-            textInfo.setText("Error: "+ex.getMessage());
+            infoLabel.setText("Error: "+ex.getMessage());
         }
     }//GEN-LAST:event_loginButtonActionPerformed
 
@@ -183,16 +179,15 @@ public class LoginFrame extends javax.swing.JFrame
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel infoLabel;
     private javax.swing.JEditorPane jEditorPane1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JButton loginButton;
     private javax.swing.JPasswordField pswdField;
-    private javax.swing.JTextArea textInfo;
     private javax.swing.JTextField userField;
     // End of variables declaration//GEN-END:variables
 }

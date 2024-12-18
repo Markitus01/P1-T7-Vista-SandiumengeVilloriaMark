@@ -12,6 +12,7 @@ import org.mif.manager.interficiepersistencia.IGestorBDManager;
 import org.mif.manager.interficiepersistencia.GestorBDManagerException;
 import org.mif.manager.model.Categoria;
 import org.mif.manager.model.Equip;
+import org.mif.manager.model.Jugador;
 import org.mif.manager.model.Temporada;
 
 /**
@@ -82,7 +83,7 @@ public class Utils
         List<Equip> eqs = new ArrayList<>();
         
         try {
-            eqs = gBD.obtenirEquips(getTemporadaActual());
+            eqs = gBD.obtenirEquips(tempAct);
         }
         catch (GestorBDManagerException ex)
         {
@@ -90,5 +91,21 @@ public class Utils
         }
         
         return eqs;
+    }
+    
+    public static List<Jugador> obtenirJugadors()
+    {
+        List<Jugador> jugs = new ArrayList<>();
+        
+        try 
+        {
+            jugs = gBD.obtenirJugadors();
+        }
+        catch (GestorBDManagerException ex)
+        {
+            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return jugs;
     }
 }
