@@ -32,6 +32,7 @@ public class SelTempFrame extends javax.swing.JFrame {
 
         tempsComboBox = new javax.swing.JComboBox<>();
         tempButton = new javax.swing.JButton();
+        afegirButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Seleccionar Temporada");
@@ -41,6 +42,13 @@ public class SelTempFrame extends javax.swing.JFrame {
         tempButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 tempButtonActionPerformed(evt);
+            }
+        });
+
+        afegirButton.setText("Nova Temporada");
+        afegirButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                afegirButtonActionPerformed(evt);
             }
         });
 
@@ -56,12 +64,17 @@ public class SelTempFrame extends javax.swing.JFrame {
                         .addGap(87, 87, 87))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(tempButton, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(147, 147, 147))))
+                        .addGap(147, 147, 147))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(afegirButton)
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(73, 73, 73)
+                .addContainerGap()
+                .addComponent(afegirButton)
+                .addGap(44, 44, 44)
                 .addComponent(tempsComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(28, 28, 28)
                 .addComponent(tempButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -84,6 +97,12 @@ public class SelTempFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_tempButtonActionPerformed
 
+    private void afegirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_afegirButtonActionPerformed
+        AfegirTempFrame afgTempFrame = new AfegirTempFrame();
+        afgTempFrame.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_afegirButtonActionPerformed
+
     /**
      * Funció per carregar les temporades al comboBox
      */
@@ -96,9 +115,6 @@ public class SelTempFrame extends javax.swing.JFrame {
         
         List<Temporada> temps = Utils.getTemporades();
         
-        System.out.println(temps.toString());
-        
-        // Bucle for-each l'he vist a https://www.w3schools.com/java/java_foreach_loop.asp
         for (Temporada temp : temps)
         {
             tempsComboBox.addItem(temp);
@@ -106,6 +122,7 @@ public class SelTempFrame extends javax.swing.JFrame {
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton afegirButton;
     private javax.swing.JButton tempButton;
     private javax.swing.JComboBox<Temporada> tempsComboBox;
     // End of variables declaration//GEN-END:variables

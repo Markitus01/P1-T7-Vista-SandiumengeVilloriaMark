@@ -4,7 +4,6 @@
  */
 package org.mif.manager.vista;
 
-import java.util.List;
 import javax.swing.DefaultListModel;
 import org.mif.manager.model.Equip;
 import org.mif.manager.model.Jugador;
@@ -17,8 +16,7 @@ public class SelGestioFrame extends javax.swing.JFrame
 {
     private DefaultListModel<Equip> equipsListModel = new DefaultListModel<>();
     private DefaultListModel<Jugador> jugadorsListModel = new DefaultListModel<>();
-    private List<Equip> equips;
-    private List<Jugador> jugadors;
+    
     /**
      * Idea per gestionar les llistes treta de:
      * https://stackoverflow.com/questions/8176965/how-to-add-element-to-existing-jlist
@@ -26,8 +24,6 @@ public class SelGestioFrame extends javax.swing.JFrame
     public SelGestioFrame()
     {
         initComponents();
-        equipsList.setModel(equipsListModel);
-        jugadorList.setModel(jugadorsListModel);
         carregarLlistes();
     }
 
@@ -152,7 +148,7 @@ public class SelGestioFrame extends javax.swing.JFrame
     }//GEN-LAST:event_enrereButtonActionPerformed
 
     private void gestEquipButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gestEquipButton1ActionPerformed
-        GestEquipsFrame equipsFrame = new GestEquipsFrame(equips);
+        GestEquipsFrame equipsFrame = new GestEquipsFrame();
         equipsFrame.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_gestEquipButton1ActionPerformed
@@ -168,29 +164,34 @@ public class SelGestioFrame extends javax.swing.JFrame
      */
     private void carregarLlistes()
     {
-        equips = Utils.obtenirEquips(Utils.getTemporadaActual());
-        jugadors = Utils.obtenirJugadors();
-
-        System.out.println(equips.toString());
+        Utils.setEquips(Utils.getTemporadaActual());
+        Utils.setJugadors();
         
-        if (equips.isEmpty())
+        equipsList.setModel(equipsListModel);
+        jugadorList.setModel(jugadorsListModel);
+        
+        if (Utils.getEquips().isEmpty())
         {
             equipsLabel.setText("No hi han equips aquesta temporada");
         }
+        else 
+        {
+            for (Equip equip : Utils.getEquips())
+            {
+                equipsListModel.addElement(equip);
+            }
+        }
         
-        if (jugadors.isEmpty())
+        if (Utils.getJugadors().isEmpty()) // Mostrarem sempre tots els jugadors de la BD
         {
             jugadorsLabel.setText("No hi han jugadors a la bd");
         }
-
-        for (Equip equip : equips)
+        else 
         {
-            equipsListModel.addElement(equip);
-        }
-        
-        for (Jugador jugador : jugadors)
-        {
-            jugadorsListModel.addElement(jugador);
+            for (Jugador jugador : Utils.getJugadors())
+            {
+                jugadorsListModel.addElement(jugador);
+            }
         }
     }
     

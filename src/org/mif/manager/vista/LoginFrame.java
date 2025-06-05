@@ -5,18 +5,13 @@
 package org.mif.manager.vista;
 
 import org.mif.manager.interficiepersistencia.GestorBDManagerException;
-import org.mif.manager.interficiepersistencia.IGestorBDManager;
-
-
 
 /**
  *
  * @author marks
  */
 public class LoginFrame extends javax.swing.JFrame
-{
-    IGestorBDManager gbd = Utils.getGBD();
-    
+{    
     /**
      * Creates new form LoginFrame
      */
@@ -33,22 +28,12 @@ public class LoginFrame extends javax.swing.JFrame
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jMenu1 = new javax.swing.JMenu();
-        jMenu2 = new javax.swing.JMenu();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jEditorPane1 = new javax.swing.JEditorPane();
         userField = new javax.swing.JTextField();
         pswdField = new javax.swing.JPasswordField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         loginButton = new javax.swing.JButton();
         infoLabel = new javax.swing.JLabel();
-
-        jMenu1.setText("jMenu1");
-
-        jMenu2.setText("jMenu2");
-
-        jScrollPane1.setViewportView(jEditorPane1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Login");
@@ -117,7 +102,7 @@ public class LoginFrame extends javax.swing.JFrame
         
         try 
         {
-           if (gbd.loginUsuari(login, password) == 1)
+           if (Utils.getGBD().loginUsuari(login, password) == 1)
            {
                SelTempFrame tempsFrame = new SelTempFrame();
                tempsFrame.setVisible(true);
@@ -168,7 +153,7 @@ public class LoginFrame extends javax.swing.JFrame
             System.exit(0);
         }
         
-        Utils.setGBD(args[0]);
+        Utils.setGBD(args[0]); // Setejem el GBD
         
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -180,12 +165,8 @@ public class LoginFrame extends javax.swing.JFrame
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel infoLabel;
-    private javax.swing.JEditorPane jEditorPane1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton loginButton;
     private javax.swing.JPasswordField pswdField;
     private javax.swing.JTextField userField;

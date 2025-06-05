@@ -15,13 +15,11 @@ import org.mif.manager.model.Equip;
  */
 public class GestEquipsFrame extends javax.swing.JFrame
 {
-    private List<Equip> equips;
     
-    public GestEquipsFrame(List<Equip> eqs)
+    public GestEquipsFrame()
     {
-        equips = eqs;
         initComponents();
-        carregarEquips(equips);
+        carregarEquips();
     }
 
     /**
@@ -45,6 +43,7 @@ public class GestEquipsFrame extends javax.swing.JFrame
         editarButton1 = new javax.swing.JButton();
         tipusLabel = new javax.swing.JLabel();
         tempLabel = new javax.swing.JLabel();
+        busquedaButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Gestió d'equips");
@@ -57,22 +56,16 @@ public class GestEquipsFrame extends javax.swing.JFrame
             }
         });
 
-        busquedaField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                busquedaFieldActionPerformed(evt);
-            }
-        });
-
         equipsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Nom", "Jugadors", "TIpus", "Categoria"
+                "Id", "Nom", "Tipus", "Categoria"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
                 false, false, false, false
@@ -129,6 +122,13 @@ public class GestEquipsFrame extends javax.swing.JFrame
 
         tempLabel.setText("Gestionant equips de la "+ Utils.getTemporadaActual());
 
+        busquedaButton.setText("Busca");
+        busquedaButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                busquedaButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -147,9 +147,12 @@ public class GestEquipsFrame extends javax.swing.JFrame
                         .addComponent(eliminarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(busquedaField, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(busquedaField, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(busquedaButton))
                             .addComponent(nomLabel))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 592, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(tipusLabel)
                             .addComponent(tipusComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -177,7 +180,8 @@ public class GestEquipsFrame extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(busquedaField, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tipusComboBox))
+                    .addComponent(tipusComboBox)
+                    .addComponent(busquedaButton))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
@@ -198,12 +202,10 @@ public class GestEquipsFrame extends javax.swing.JFrame
         this.dispose();
     }//GEN-LAST:event_enrereButtonActionPerformed
 
-    private void busquedaFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_busquedaFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_busquedaFieldActionPerformed
-
     private void afegirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_afegirButtonActionPerformed
-        // TODO add your handling code here:
+        AfegirEquipFrame afegirFrame = new AfegirEquipFrame();
+        afegirFrame.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_afegirButtonActionPerformed
 
     private void informeJasperButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_informeJasperButtonActionPerformed
@@ -215,32 +217,55 @@ public class GestEquipsFrame extends javax.swing.JFrame
     }//GEN-LAST:event_eliminarButtonActionPerformed
 
     private void editarButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editarButton1ActionPerformed
-        // TODO add your handling code here:
+        // Obtenim la fila de l'equip seleccionat al JTable
+        int filaSel = equipsTable.getSelectedRow();
+        
+        // Mostrem un diàleg d'error si no selecciona cap fila i interrompem la funció
+        if (filaSel == -1)
+        {
+            javax.swing.JOptionPane.showMessageDialog(this, "Has de seleccionar un eequip per poder editar-ho!", "Error de selecció", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        // Hem d'adaptar quina es la fila "real" que està seleccionada per si l'usuari fa ús del sorter: https://stackoverflow.com/questions/25926070/when-to-use-convertrowindextomodel
+        int filaReal = equipsTable.convertRowIndexToModel(filaSel);
+        
+        // Obtenim l'id de l'equip a editar: https://stackoverflow.com/questions/29345792/java-jtable-getting-the-data-of-the-selected-row
+        int equipSel = (int) equipsTable.getModel().getValueAt(filaReal, 0);
+        
+        EditEquipFrame editEquip = new EditEquipFrame(equipSel);
+        editEquip.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_editarButton1ActionPerformed
 
-    private void carregarEquips(List<Equip> eqs) {
-        String[] columnNames = {"Nom", "Jugadors", "Tipus", "Categoria"};
-        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
+    private void busquedaButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_busquedaButtonActionPerformed
+        String busqueda = busquedaField.getText();
+        
+        
+    }//GEN-LAST:event_busquedaButtonActionPerformed
 
-        for (Equip equip : eqs)
+    private void carregarEquips() {
+        // Obtenim el table model creat automàticament per el disseny
+        DefaultTableModel equipsModel = (DefaultTableModel) equipsTable.getModel();
+
+        for (Equip equip : Utils.getEquips())
         {
             Object[] row = {
+                equip.getId(),
                 equip.getNom(),
-                3, // PER ARREGLAR, FER METODE PER COMPTAR JUGADORS O NO ENSEÑAR QUINA QT DE JUGADORS TE
                 equip.getTipus(),
                 equip.getCategoria().getNom()
             };
-            tableModel.addRow(row);
+            equipsModel.addRow(row);
         }
-
-        equipsTable.setModel(tableModel);
         
-        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(tableModel);
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(equipsModel);
         equipsTable.setRowSorter(sorter);
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton afegirButton;
+    private javax.swing.JButton busquedaButton;
     private javax.swing.JTextField busquedaField;
     private javax.swing.JButton editarButton1;
     private javax.swing.JButton eliminarButton;

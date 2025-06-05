@@ -13,6 +13,7 @@ import org.mif.manager.interficiepersistencia.GestorBDManagerException;
 import org.mif.manager.model.Categoria;
 import org.mif.manager.model.Equip;
 import org.mif.manager.model.Jugador;
+import org.mif.manager.model.Membre;
 import org.mif.manager.model.Temporada;
 
 /**
@@ -23,9 +24,15 @@ import org.mif.manager.model.Temporada;
 public class Utils
 {
     private static IGestorBDManager gBD = null;
-    private static List<Temporada> temporades = new ArrayList<>();
+    private static List<Temporada> temporades = new ArrayList();
     private static Temporada tempAct = null;
-    private static List<Categoria> categories = new ArrayList<>();
+    private static List<Categoria> categories = new ArrayList();
+    private static List<Equip> equips = new ArrayList();
+    private static Equip equipActual = new Equip();
+    private static List<Jugador> jugadors = new ArrayList();
+    private static List<Membre> membres = new ArrayList();
+    private static List<Jugador> jugsDinsEquip = new ArrayList();
+    private static List<Jugador> jugsForaEquip = new ArrayList();
     
     private Utils(){}
     
@@ -42,6 +49,31 @@ public class Utils
     public static Temporada getTemporadaActual()
     {
         return tempAct;
+    }
+    
+    public static List<Equip> getEquips()
+    {
+        return equips;
+    }
+    
+    public static Equip getEquipActual()
+    {
+        return equipActual;
+    }
+    
+    public static List<Jugador> getJugadors()
+    {
+        return jugadors;
+    }
+    
+    public static List<Jugador> getJugadorsDinsEquip()
+    {
+        return jugsDinsEquip;
+    }
+    
+    public static List<Jugador> getJugadorsInscriptiblesEquip()
+    {
+        return jugsForaEquip;
     }
     
     public static List<Categoria> getCategories()
@@ -78,34 +110,87 @@ public class Utils
         tempAct = t;
     }
     
-    public static List<Equip> obtenirEquips(Temporada t)
-    {
-        List<Equip> eqs = new ArrayList<>();
-        
-        try {
-            eqs = gBD.obtenirEquips(tempAct);
+    public static void setEquips(Temporada t)
+    {    
+        try
+        {
+            equips = gBD.obtenirEquips(tempAct);
         }
         catch (GestorBDManagerException ex)
         {
             Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        return eqs;
     }
     
-    public static List<Jugador> obtenirJugadors()
+    public static void setEquipActual(Equip e)
     {
-        List<Jugador> jugs = new ArrayList<>();
-        
+        if (e != null)
+        {
+            equipActual = e;
+        }
+        else 
+        {
+            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, "L'equip actual no s'ha pogut assignar correctament!");
+        }
+    }
+    
+    public static void setJugadors()
+    {
         try 
         {
-            jugs = gBD.obtenirJugadors();
+            jugadors = gBD.obtenirJugadors();
         }
         catch (GestorBDManagerException ex)
         {
             Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        return jugs;
+    }
+    
+    public static void setMembres()
+    {
+        try 
+        {
+            membres = gBD.obtenirMembres();
+        }
+        catch (GestorBDManagerException ex)
+        {
+            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public static void setJugsDinsEquip(int eqId)
+    {
+        try 
+        {
+            jugsDinsEquip = gBD.obtenirJugadorsEquip(eqId);
+        }
+        catch (GestorBDManagerException ex)
+        {
+            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public static void setJugsInscriptiblesEquip(int eqId)
+    {
+        try 
+        {
+            jugsForaEquip = gBD.obtenirJugadorsEquipInscriptibles(eqId);
+        }
+        catch (GestorBDManagerException ex)
+        {
+            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public static void setCategories()
+    {
+        try 
+        {
+            categories = gBD.obtenirCategories();
+        }
+        catch (GestorBDManagerException ex)
+        {
+            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
