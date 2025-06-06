@@ -198,17 +198,16 @@ public class EditEquipFrame extends javax.swing.JFrame
 
     private void afegirJugadorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_afegirJugadorButtonActionPerformed
         int escollibleSel = escolliblesTable.getSelectedRow();
-        
+    
         if (escollibleSel == -1)
         {
             javax.swing.JOptionPane.showMessageDialog(this, "Has de seleccionar un jugador per poder afegir-lo al equip!", "Error de selecció", javax.swing.JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+
         int filaReal = escolliblesTable.convertRowIndexToModel(escollibleSel);
-        
-        String jugSel = (String) escolliblesTable.getModel().getValueAt(filaReal, 1); // Agafem el IdLegal del jugador seleccionat
-        
+        String jugSel = (String) escolliblesTable.getModel().getValueAt(filaReal, 1); // IdLegal
+
         Jugador escollit;
         try 
         {
@@ -219,36 +218,110 @@ public class EditEquipFrame extends javax.swing.JFrame
             javax.swing.JOptionPane.showMessageDialog(this, ex, "Error de selecció", javax.swing.JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
-        System.out.println(escollit);
+
+        boolean ferTitular = titularCheck.isSelected();
         Membre nouMembre = new Membre();
         nouMembre.setEquMembre(equipActual);
         nouMembre.setJugMembre(escollit.getId());
-        if (titularCheck.isSelected())
+        nouMembre.setTitular(ferTitular);
+
+        // NOMÉS SI ES VOL FER TITULAR
+        if (ferTitular)
         {
-            nouMembre.setTitular(true);
+            try {
+                Integer equipOnTitular = Utils.getGBD().obtenirEquipOnEsTitular(escollit.getId());
+                if (equipOnTitular != null && equipOnTitular != equipActual) {
+                    int resposta = javax.swing.JOptionPane.showConfirmDialog(this,
+                        "Aquest jugador ja es titular a un altre equip, vols continuar?",
+                        "Atenció", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE);
+
+                    if (resposta != javax.swing.JOptionPane.YES_OPTION)
+                    {
+                        return;
+                    }
+                    else // Si vol seguir amb el procés el canviem de titular
+                    {
+                        Membre membreAntic = new Membre();
+                        membreAntic.setEquMembre(equipOnTitular);
+                        membreAntic.setJugMembre(escollit.getId());
+                        membreAntic.setTitular(true); // abans era titular
+
+                        Utils.getGBD().modificarMembre(membreAntic, false); // ara serà convidat
+                    }
+                }
+            } catch (GestorBDManagerException ex) {
+                javax.swing.JOptionPane.showMessageDialog(this, ex, "Error al comprovar titularitat", javax.swing.JOptionPane.ERROR_MESSAGE);
+                return;
+            }
         }
-        else 
-        {
-            nouMembre.setTitular(false);
-        }
-        
-        // Intentem afegir el jugador a l'equip
+
+        // Ara sí, afegim-lo com a membre (titular o convidat)
         try 
         {
             Utils.getGBD().afegirMembre(nouMembre);
+            Utils.setJugsDinsEquip(equipActual);
+            Utils.setJugsInscriptiblesEquip(equipActual);
+            carregarLlistes();
         }
         catch (GestorBDManagerException ex)
         {
-            javax.swing.JOptionPane.showMessageDialog(this, ex, "Error al afegir jugador", javax.swing.JOptionPane.ERROR_MESSAGE);
+            if (nouMembre.getTitular())
+            {
+                javax.swing.JOptionPane.showMessageDialog(this, "No pot ser titular en un equip de categoria diferent!", "Error al afegir jugador", javax.swing.JOptionPane.ERROR_MESSAGE);
+            }
+            else 
+            {
+                javax.swing.JOptionPane.showMessageDialog(this, "Un jugador només pot ser convidat en categories iguals o superiors!", "Error al afegir jugador", javax.swing.JOptionPane.ERROR_MESSAGE);
+            }
+            ex.printStackTrace();
             return;
         }
-
-        // TODO recarregar llistes
     }//GEN-LAST:event_afegirJugadorButtonActionPerformed
 
     private void treureJugadorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_treureJugadorButtonActionPerformed
-        
+        int membreSel = membresTable.getSelectedRow();
+
+        if (membreSel == -1)
+        {
+            javax.swing.JOptionPane.showMessageDialog(this, "Has de seleccionar un jugador membre per poder treure'l!", "Error de selecció", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int filaReal = membresTable.convertRowIndexToModel(membreSel);
+        String jugSel = (String) membresTable.getModel().getValueAt(filaReal, 1); // IdLegal
+
+        Jugador membre;
+        try {
+            membre = Utils.getGBD().obtenirJugador(jugSel);
+        }
+        catch (GestorBDManagerException ex)
+        {
+            javax.swing.JOptionPane.showMessageDialog(this, "No s'ha pogut obtenir el jugador seleccionat.", "Error de selecció", javax.swing.JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+            return;
+        }
+
+        // Important! Saber si el jugador és Titular o Convidat per a la clau primaria de la taula membre
+        boolean titular = false;
+        String tit = (String) membresTable.getModel().getValueAt(filaReal, 3);
+        if (tit.equalsIgnoreCase("Titular")) titular = true;
+
+        Membre membreObj = new Membre();
+        membreObj.setEquMembre(equipActual);
+        membreObj.setJugMembre(membre.getId());
+        membreObj.setTitular(titular);
+
+        try
+        {
+            Utils.getGBD().eliminarMembre(membreObj);
+            Utils.setJugsDinsEquip(equipActual);
+            Utils.setJugsInscriptiblesEquip(equipActual);
+            carregarLlistes();
+        }
+        catch (GestorBDManagerException ex)
+        {
+            javax.swing.JOptionPane.showMessageDialog(this, ex, "Error al treure jugador", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_treureJugadorButtonActionPerformed
 
     private void enrereButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enrereButtonActionPerformed
@@ -272,42 +345,63 @@ public class EditEquipFrame extends javax.swing.JFrame
 
     private void carregarLlistes()
     {
-        // LLISTA DELS JUGADORS DINS L'EQUIP:
-        // Obtenim el table model creat automàticament per el disseny
+        // Obtenim el table model
         DefaultTableModel membresModel = (DefaultTableModel) membresTable.getModel();
-        membresModel.setRowCount(0); // Netejem la taula per evitar duplicació de dades al recarregar
-        
+        membresModel.setRowCount(0); // Netejem la taula per evitar duplicació
+
         for (Jugador membre : Utils.getJugadorsDinsEquip())
         {
-            membre.setEdat(Utils.getTemporadaActual().getAnny()); // Calculem l'edat a partir de la temporada a la que ens trobem
+            membre.setEdat(Utils.getTemporadaActual().getAnny()); // Calculem l'edat
+            boolean titular = false;
+            try
+            {
+                titular = Utils.getGBD().esTitular(equipActual, membre.getId());
+            }
+            catch (GestorBDManagerException ex)
+            {
+                // Si peta, el posem com a convidat per defecte
+            }
+            
+            String txtTitular;
+            if (titular)
+            {
+                txtTitular = "Titular";
+            }
+            else
+            {
+                txtTitular = "Convidat";
+            }
+            
             Object[] row = {
                 membre.getNom(),
                 membre.getIdLegal(),
                 membre.getEdat(),
-                "TODO"
+                txtTitular
             };
             membresModel.addRow(row);
         }
-        
+
         TableRowSorter<DefaultTableModel> sorterDinsEquip = new TableRowSorter<>(membresModel);
         membresTable.setRowSorter(sorterDinsEquip);
-        
+
         // LLISTA DELS JUGADORS FORA DE L'EQUIP QUE SIGUIN INSCRIPTIBLES
         DefaultTableModel inscriptiblesModel = (DefaultTableModel) escolliblesTable.getModel();
         inscriptiblesModel.setRowCount(0);
-        
+
         for (Jugador inscriptible : Utils.getJugadorsInscriptiblesEquip())
         {
             inscriptible.setEdat(Utils.getTemporadaActual().getAnny());
-            Object[] row = {
-                inscriptible.getNom(),
-                inscriptible.getIdLegal(),
-                inscriptible.getEdat(),
-                "TODO"
-            };
-            inscriptiblesModel.addRow(row);
+            if (inscriptible.getEdat() >= 5)
+            {
+                Object[] row = {
+                    inscriptible.getNom(),
+                    inscriptible.getIdLegal(),
+                    inscriptible.getEdat()
+                };
+                inscriptiblesModel.addRow(row);
+            }
         }
-        
+
         TableRowSorter<DefaultTableModel> sorterInscriptibles = new TableRowSorter<>(inscriptiblesModel);
         escolliblesTable.setRowSorter(sorterInscriptibles);
     }
