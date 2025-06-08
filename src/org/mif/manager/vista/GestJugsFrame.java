@@ -24,10 +24,15 @@ public class GestJugsFrame extends javax.swing.JFrame {
      */
     public GestJugsFrame() {
         initComponents();
-        Utils.setEquips(Utils.getTemporadaActual());
-        Utils.setCategories();
-        Utils.setJugadors();
-        Utils.setMembres();
+        
+        if (Utils.getEquips().isEmpty())
+            Utils.setEquips(Utils.getTemporadaActual());
+        if (Utils.getCategories().isEmpty())
+            Utils.setCategories();
+        if (Utils.getJugadors().isEmpty())
+            Utils.setJugadors();
+        if (Utils.getMembres().isEmpty())
+            Utils.setMembres();
         
         carregarCategoriesComboBox();
         carregarEquipsComboBox();
@@ -373,6 +378,22 @@ public class GestJugsFrame extends javax.swing.JFrame {
 
         for (Jugador jug : Utils.getJugadors())
         {
+            // Calculem l'edat mínima de totes les categories
+            int edatMinimaCategoria = 100;
+            for (Categoria c : Utils.getCategories())
+            {
+                if (c.getEdat_min() < edatMinimaCategoria)
+                {
+                    edatMinimaCategoria = c.getEdat_min();
+                }
+            }
+            int edatJugador = Utils.getTemporadaActual().getAnny().getYear() - jug.getData_naix().getYear();
+            // Saltem si encara no existeix
+            if (edatJugador < edatMinimaCategoria)
+            {
+                continue;
+            }
+            
             boolean cercador = false;
             if (textCerca.isEmpty()
                 || jug.getNom().toLowerCase().contains(textCerca)
@@ -382,7 +403,7 @@ public class GestJugsFrame extends javax.swing.JFrame {
                 cercador = true;
             }
 
-            // Equip titular (amb membres carregats)
+            // Mostrem l'equip al que pertany com a titular
             String nomEquipTitular = "";
             int idEquipTitular = -1;
             for (Membre m : Utils.getMembres())
@@ -393,6 +414,7 @@ public class GestJugsFrame extends javax.swing.JFrame {
                     break;
                 }
             }
+            
             if (idEquipTitular != -1)
             {
                 for (Equip eq : Utils.getEquips())
@@ -413,7 +435,6 @@ public class GestJugsFrame extends javax.swing.JFrame {
 
             // Categoria dels jugadors segons edat
             String nomCategoria = "";
-            int edatJugador = Utils.getTemporadaActual().getAnny().getYear() - jug.getData_naix().getYear();
             for (Categoria c : Utils.getCategories())
             {
                 if (edatJugador >= c.getEdat_min() && edatJugador <= c.getEdat_max())
@@ -442,8 +463,6 @@ public class GestJugsFrame extends javax.swing.JFrame {
             {
                 selAny = true;
             }
-
-            jug.setEdat(Utils.getTemporadaActual().getAnny());
 
             if (cercador && selEq && selCat && selSexe && selAny)
             {

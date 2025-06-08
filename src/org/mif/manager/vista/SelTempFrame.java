@@ -90,6 +90,8 @@ public class SelTempFrame extends javax.swing.JFrame {
         if (t != null)
         {
             Utils.setTemporadaActual(t);
+            Utils.setEquips(Utils.getTemporadaActual()); // al escollir temporada refresquem la llista d'equips per a la temporada escollida
+            
             SelGestioFrame gestFrame = new SelGestioFrame();
             gestFrame.setVisible(true);
             

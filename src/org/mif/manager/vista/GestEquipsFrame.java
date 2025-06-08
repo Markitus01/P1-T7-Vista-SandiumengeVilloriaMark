@@ -21,7 +21,9 @@ public class GestEquipsFrame extends javax.swing.JFrame
     
     public GestEquipsFrame()
     {
-        Utils.setEquips(Utils.getTemporadaActual());
+        if (Utils.getEquips().isEmpty())
+            Utils.setEquips(Utils.getTemporadaActual());
+        
         initComponents();
         carregarCategoriesComboBox();
         carregarEquips();

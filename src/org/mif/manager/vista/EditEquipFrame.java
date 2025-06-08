@@ -351,7 +351,6 @@ public class EditEquipFrame extends javax.swing.JFrame
 
         for (Jugador membre : Utils.getJugadorsDinsEquip())
         {
-            membre.setEdat(Utils.getTemporadaActual().getAnny()); // Calculem l'edat
             boolean titular = false;
             try
             {

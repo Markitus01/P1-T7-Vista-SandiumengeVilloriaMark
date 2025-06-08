@@ -5,6 +5,7 @@
 package org.mif.manager.vista;
 
 import javax.swing.DefaultListModel;
+import org.mif.manager.model.Categoria;
 import org.mif.manager.model.Equip;
 import org.mif.manager.model.Jugador;
 
@@ -164,8 +165,12 @@ public class SelGestioFrame extends javax.swing.JFrame
      */
     private void carregarLlistes()
     {
-        Utils.setEquips(Utils.getTemporadaActual());
-        Utils.setJugadors();
+        if (Utils.getEquips().isEmpty())
+            Utils.setEquips(Utils.getTemporadaActual());
+        if (Utils.getJugadors().isEmpty())
+            Utils.setJugadors();
+        if (Utils.getCategories().isEmpty())
+            Utils.setCategories();
         
         equipsList.setModel(equipsListModel);
         jugadorList.setModel(jugadorsListModel);
@@ -182,15 +187,27 @@ public class SelGestioFrame extends javax.swing.JFrame
             }
         }
         
-        if (Utils.getJugadors().isEmpty()) // Mostrarem sempre tots els jugadors de la BD
+        if (Utils.getJugadors().isEmpty()) // Mostrem els jugadors que si puguin participar
         {
             jugadorsLabel.setText("No hi han jugadors a la bd");
         }
         else 
         {
+            // Calculem l'edat mínima de participació
+            int edatMinimaCategoria = 100;
+            for (Categoria c : Utils.getCategories())
+            {
+                if (c.getEdat_min() < edatMinimaCategoria)
+                {
+                    edatMinimaCategoria = c.getEdat_min();
+                }
+            }
+            // Només afegim els jugadors amb edat suficient
             for (Jugador jugador : Utils.getJugadors())
             {
-                jugadorsListModel.addElement(jugador);
+                jugador.setEdat(Utils.getTemporadaActual().getAnny());
+                if (jugador.getEdat() > edatMinimaCategoria)
+                    jugadorsListModel.addElement(jugador);
             }
         }
     }
