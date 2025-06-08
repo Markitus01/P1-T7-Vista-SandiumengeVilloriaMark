@@ -81,6 +81,11 @@ public class Utils
         return categories;
     }
     
+    public static List<Membre> getMembres()
+    {
+        return membres;
+    }
+    
     public static void setGBD(String nomClassePersist)
     {
         try
@@ -150,7 +155,7 @@ public class Utils
     {
         try 
         {
-            membres = gBD.obtenirMembres();
+            membres = gBD.obtenirMembres(tempAct);
         }
         catch (GestorBDManagerException ex)
         {

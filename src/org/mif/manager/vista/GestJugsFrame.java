@@ -4,7 +4,14 @@
  */
 package org.mif.manager.vista;
 
+import java.time.LocalDate;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.table.DefaultTableModel;
+import org.mif.manager.interficiepersistencia.GestorBDManagerException;
+import org.mif.manager.model.Categoria;
 import org.mif.manager.model.Equip;
+import org.mif.manager.model.Jugador;
+import org.mif.manager.model.Membre;
 
 /**
  *
@@ -17,6 +24,30 @@ public class GestJugsFrame extends javax.swing.JFrame {
      */
     public GestJugsFrame() {
         initComponents();
+        Utils.setEquips(Utils.getTemporadaActual());
+        Utils.setCategories();
+        Utils.setJugadors();
+        Utils.setMembres();
+        
+        carregarCategoriesComboBox();
+        carregarEquipsComboBox();
+        carregarDataNaixComboBox();
+        // Al igual que com hem fet a la gestió dels equips, afegim un documentlistener per evitar problemes
+        busquedaField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener()
+        {
+            public void insertUpdate(javax.swing.event.DocumentEvent e)
+            { 
+                filtrarJugadors(); 
+            }
+            public void removeUpdate(javax.swing.event.DocumentEvent e) 
+            {
+                filtrarJugadors();
+            }
+            public void changedUpdate(javax.swing.event.DocumentEvent e) 
+            {
+                filtrarJugadors();
+            }
+        });
     }
 
     /**
@@ -32,7 +63,7 @@ public class GestJugsFrame extends javax.swing.JFrame {
         nomLabel = new javax.swing.JLabel();
         busquedaField = new javax.swing.JTextField();
         equipLabel = new javax.swing.JLabel();
-        equipComboBox = new javax.swing.JComboBox<>();
+        categoriaComboBox = new javax.swing.JComboBox<>();
         sexeLabel = new javax.swing.JLabel();
         sexeComboBox = new javax.swing.JComboBox<>();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -41,6 +72,10 @@ public class GestJugsFrame extends javax.swing.JFrame {
         afegirButton = new javax.swing.JButton();
         eliminarButon = new javax.swing.JButton();
         exportarButton = new javax.swing.JButton();
+        equipComboBox = new javax.swing.JComboBox<>();
+        categoriaLabel = new javax.swing.JLabel();
+        sexeLabel1 = new javax.swing.JLabel();
+        dataNaixComboBox = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Gestió de Jugadors");
@@ -53,33 +88,38 @@ public class GestJugsFrame extends javax.swing.JFrame {
             }
         });
 
-        nomLabel.setText("Nom Jugador:");
-
-        busquedaField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                busquedaFieldActionPerformed(evt);
-            }
-        });
+        nomLabel.setText("Nom/NIF:");
 
         equipLabel.setText("Equip:");
+
+        categoriaComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                categoriaComboBoxActionPerformed(evt);
+            }
+        });
 
         sexeLabel.setText("Sexe:");
 
         sexeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tots", "Masculí", "Femení" }));
+        sexeComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sexeComboBoxActionPerformed(evt);
+            }
+        });
 
         jugsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Nom", "IdLegal", "Equip", "Sexe", "Edat"
+                "Nom", "IdLegal", "Equip", "Categoria", "Sexe", "Edat"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -125,6 +165,22 @@ public class GestJugsFrame extends javax.swing.JFrame {
             }
         });
 
+        equipComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                equipComboBoxActionPerformed(evt);
+            }
+        });
+
+        categoriaLabel.setText("Categoria");
+
+        sexeLabel1.setText("Data de Naixement:");
+
+        dataNaixComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dataNaixComboBoxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -133,36 +189,39 @@ public class GestJugsFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(nomLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(equipLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(sexeLabel)
-                        .addGap(52, 52, 52))
+                        .addComponent(afegirButton, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(editarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(134, 134, 134)
+                        .addComponent(exportarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 293, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 202, Short.MAX_VALUE)
+                        .addComponent(eliminarButon, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(enrereButton)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(enrereButton)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(afegirButton, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(busquedaField, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(nomLabel))
                                 .addGap(18, 18, 18)
-                                .addComponent(editarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(134, 134, 134)
-                                .addComponent(exportarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 293, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 202, Short.MAX_VALUE)
-                                .addComponent(eliminarButon, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(busquedaField, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(231, 231, 231)
-                                .addComponent(equipComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(sexeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane1))
-                        .addContainerGap())))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(equipComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(equipLabel))
+                                .addGap(52, 52, 52)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(categoriaLabel)
+                                    .addComponent(categoriaComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(54, 54, 54)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(sexeLabel)
+                                    .addComponent(sexeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(37, 37, 37)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(sexeLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(dataNaixComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -173,13 +232,16 @@ public class GestJugsFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(nomLabel)
                     .addComponent(equipLabel)
-                    .addComponent(sexeLabel))
+                    .addComponent(sexeLabel)
+                    .addComponent(categoriaLabel)
+                    .addComponent(sexeLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(busquedaField, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(equipComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(sexeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(equipComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(categoriaComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(sexeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(dataNaixComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 443, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 239, Short.MAX_VALUE)
@@ -200,10 +262,6 @@ public class GestJugsFrame extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_enrereButtonActionPerformed
 
-    private void busquedaFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_busquedaFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_busquedaFieldActionPerformed
-
     private void eliminarButonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarButonActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_eliminarButonActionPerformed
@@ -220,13 +278,199 @@ public class GestJugsFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_afegirButtonActionPerformed
 
+    private void categoriaComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_categoriaComboBoxActionPerformed
+        filtrarJugadors();
+    }//GEN-LAST:event_categoriaComboBoxActionPerformed
+
+    private void equipComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_equipComboBoxActionPerformed
+        filtrarJugadors();
+    }//GEN-LAST:event_equipComboBoxActionPerformed
+
+    private void dataNaixComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dataNaixComboBoxActionPerformed
+        filtrarJugadors();
+    }//GEN-LAST:event_dataNaixComboBoxActionPerformed
+
+    private void sexeComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sexeComboBoxActionPerformed
+        filtrarJugadors();
+    }//GEN-LAST:event_sexeComboBoxActionPerformed
+
+    private void carregarEquipsComboBox()
+    {
+        equipComboBox.addItem("Tots");
+        for (Equip e : Utils.getEquips())
+        {
+            equipComboBox.addItem(e.getNom());
+        }
+    }
+
+    private void carregarCategoriesComboBox()
+    {
+        categoriaComboBox.addItem("Totes");
+        for (Categoria c : Utils.getCategories())
+        {
+            categoriaComboBox.addItem(c.getNom());
+        }
+    }
+
+    private void carregarDataNaixComboBox()
+    {
+        dataNaixComboBox.addItem("Totes");
+        for (Jugador jug : Utils.getJugadors())
+        {
+            String anyNaix = String.valueOf(jug.getData_naix().getYear());
+            if (((DefaultComboBoxModel<String>) dataNaixComboBox.getModel()).getIndexOf(anyNaix) == -1)
+            {
+                dataNaixComboBox.addItem(anyNaix);
+            }
+        }
+    }
+    
+    private void filtrarJugadors()
+    {
+        DefaultTableModel model = (DefaultTableModel) jugsTable.getModel();
+        model.setRowCount(0);
+
+        // Per evitar nullpointer exception ens assegurem de que hi hagi un valor default
+        String textCerca = "";
+        if (busquedaField.getText() != null)
+        {
+            textCerca = busquedaField.getText().toLowerCase().trim();
+        }
+
+        String equipSel = "Tots";
+        if (equipComboBox.getSelectedItem() != null)
+        {
+            equipSel = equipComboBox.getSelectedItem().toString();
+        }
+
+        String categoriaSel = "Totes";
+        if (categoriaComboBox.getSelectedItem() != null)
+        {
+            categoriaSel = categoriaComboBox.getSelectedItem().toString();
+        }
+
+        String sexeSel = "Tots";
+        String sexeFiltre = "";
+        if (sexeComboBox.getSelectedItem() != null)
+        {
+            sexeSel = sexeComboBox.getSelectedItem().toString();
+
+            if (sexeSel.equals("Masculí"))
+            {
+                sexeFiltre = "H";
+            }
+            else if (sexeSel.equals("Femení"))
+            {
+                sexeFiltre = "D";
+            }
+        }
+
+        String anyNaixSel = "Totes";
+        if (dataNaixComboBox.getSelectedItem() != null)
+        {
+            anyNaixSel = dataNaixComboBox.getSelectedItem().toString();
+        }
+
+        for (Jugador jug : Utils.getJugadors())
+        {
+            boolean cercador = false;
+            if (textCerca.isEmpty()
+                || jug.getNom().toLowerCase().contains(textCerca)
+                || jug.getCognoms().toLowerCase().contains(textCerca)
+                || jug.getIdLegal().toLowerCase().contains(textCerca))
+            {
+                cercador = true;
+            }
+
+            // Equip titular (amb membres carregats)
+            String nomEquipTitular = "";
+            int idEquipTitular = -1;
+            for (Membre m : Utils.getMembres())
+            {
+                if (m.getJugMembre() == jug.getId() && m.getTitular())
+                {
+                    idEquipTitular = m.getEquMembre();
+                    break;
+                }
+            }
+            if (idEquipTitular != -1)
+            {
+                for (Equip eq : Utils.getEquips())
+                {
+                    if (eq.getId() == idEquipTitular)
+                    {
+                        nomEquipTitular = eq.getNom();
+                        break;
+                    }
+                }
+            }
+
+            boolean selEq = false;
+            if (equipSel.equals("Tots") || nomEquipTitular.equals(equipSel))
+            {
+                selEq = true;
+            }
+
+            // Categoria dels jugadors segons edat
+            String nomCategoria = "";
+            int edatJugador = Utils.getTemporadaActual().getAnny().getYear() - jug.getData_naix().getYear();
+            for (Categoria c : Utils.getCategories())
+            {
+                if (edatJugador >= c.getEdat_min() && edatJugador <= c.getEdat_max())
+                {
+                    nomCategoria = c.getNom();
+                    break;
+                }
+            }
+            boolean selCat = false;
+            if (categoriaSel.equals("Totes") || nomCategoria.equals(categoriaSel))
+            {
+                selCat = true;
+            }
+
+            // Sexe
+            boolean selSexe = false;
+            if (sexeSel.equals("Tots") || jug.getSexe().equalsIgnoreCase(sexeFiltre))
+            {
+                selSexe = true;
+            }
+
+            // Any de naixement
+            String anyNaixJugador = String.valueOf(jug.getData_naix().getYear());
+            boolean selAny = false;
+            if (anyNaixSel.equals("Totes") || anyNaixJugador.equals(anyNaixSel))
+            {
+                selAny = true;
+            }
+
+            jug.setEdat(Utils.getTemporadaActual().getAnny());
+
+            if (cercador && selEq && selCat && selSexe && selAny)
+            {
+                Object[] fila = {
+                    jug.getNom() + " " + jug.getCognoms(),
+                    jug.getIdLegal(),
+                    nomEquipTitular,
+                    nomCategoria,
+                    jug.getSexe(),
+                    jug.getEdat()
+                };
+                model.addRow(fila);
+            }
+        }
+    }
+
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton afegirButton;
     private javax.swing.JTextField busquedaField;
+    private javax.swing.JComboBox<String> categoriaComboBox;
+    private javax.swing.JLabel categoriaLabel;
+    private javax.swing.JComboBox<String> dataNaixComboBox;
     private javax.swing.JButton editarButton;
     private javax.swing.JButton eliminarButon;
     private javax.swing.JButton enrereButton;
-    private javax.swing.JComboBox<Equip> equipComboBox;
+    private javax.swing.JComboBox<String> equipComboBox;
     private javax.swing.JLabel equipLabel;
     private javax.swing.JButton exportarButton;
     private javax.swing.JScrollPane jScrollPane1;
@@ -234,5 +478,6 @@ public class GestJugsFrame extends javax.swing.JFrame {
     private javax.swing.JLabel nomLabel;
     private javax.swing.JComboBox<String> sexeComboBox;
     private javax.swing.JLabel sexeLabel;
+    private javax.swing.JLabel sexeLabel1;
     // End of variables declaration//GEN-END:variables
 }

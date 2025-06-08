@@ -255,7 +255,7 @@ public class EditEquipFrame extends javax.swing.JFrame
             }
         }
 
-        // Ara sí, afegim-lo com a membre (titular o convidat)
+        // L'afegim com a membre
         try 
         {
             Utils.getGBD().afegirMembre(nouMembre);

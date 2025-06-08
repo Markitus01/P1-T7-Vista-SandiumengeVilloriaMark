@@ -8,6 +8,7 @@ import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import org.mif.manager.interficiepersistencia.GestorBDManagerException;
+import org.mif.manager.model.Categoria;
 import org.mif.manager.model.Equip;
 import org.mif.manager.model.Jugador;
 
@@ -22,6 +23,7 @@ public class GestEquipsFrame extends javax.swing.JFrame
     {
         Utils.setEquips(Utils.getTemporadaActual());
         initComponents();
+        carregarCategoriesComboBox();
         carregarEquips();
         // Per fer la busqueda, si feia servir un keyUpEvent, no detectava bé si borraba tot, o si enganxaba coses
         // però he trobat això: https://stackoverflow.com/questions/3953208/value-change-listener-to-jtextfield
@@ -40,7 +42,6 @@ public class GestEquipsFrame extends javax.swing.JFrame
                 filtrarEquips(); 
             }
         });
-
     }
 
     /**
@@ -149,7 +150,6 @@ public class GestEquipsFrame extends javax.swing.JFrame
 
         tempLabel.setText("Gestionant equips de la "+ Utils.getTemporadaActual());
 
-        categoriaComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Totes", "Prebenjamí", "Benjamí", "Aleví", "Infantil", "Cadet", "Juvenil", "Senior" }));
         categoriaComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 categoriaComboBoxActionPerformed(evt);
@@ -360,8 +360,27 @@ public class GestEquipsFrame extends javax.swing.JFrame
         equipsTable.setRowSorter(sorter);
     }
 
-    
-    private void carregarEquips() {
+    // Funció per carregar les categories de la BD al combobox
+    private void carregarCategoriesComboBox()
+    {
+        try
+        {
+            categoriaComboBox.addItem("Totes");
+
+            for (Categoria c : Utils.getGBD().obtenirCategories())
+            {
+                categoriaComboBox.addItem(c.getNom());
+            }
+        }
+        catch (GestorBDManagerException ex)
+        {
+            javax.swing.JOptionPane.showMessageDialog(this, "Error carregant categories: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // Funció per carregar els equips de la BD al combobox
+    private void carregarEquips()
+    {
         // Obtenim el table model creat automàticament per el disseny
         DefaultTableModel equipsModel = (DefaultTableModel) equipsTable.getModel();
 
