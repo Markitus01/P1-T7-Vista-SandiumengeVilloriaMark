@@ -6,7 +6,7 @@ package org.mif.manager.vista;
 
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
-import org.mif.manager.interficiepersistencia.GestorBDManagerException;
+import org.mif.manager.model.Equip;
 import org.mif.manager.model.Jugador;
 import org.mif.manager.model.Membre;
 
@@ -22,6 +22,17 @@ public class EditEquipFrame extends javax.swing.JFrame
     {
         equipActual = idEquip;
         initComponents();
+        
+        Equip equip = Utils.obtenirEquipPerId(idEquip);
+        if (equip != null)
+        {
+            nomEquipActualLabel.setText("Gestionant equip: " + equip.getNom());
+        }
+        else 
+        {
+            nomEquipActualLabel.setText("Gestionant equip: (desconegut)");
+        }
+        
         Utils.setJugsDinsEquip(idEquip); // Obtenim els jugadors dins l'equip
         Utils.setJugsInscriptiblesEquip(idEquip); // Obtenim els jugadors inscriptibles a l'equip
         carregarLlistes();
@@ -47,6 +58,7 @@ public class EditEquipFrame extends javax.swing.JFrame
         afegiblesLabel = new javax.swing.JLabel();
         titularCheck = new javax.swing.JCheckBox();
         jLabel1 = new javax.swing.JLabel();
+        nomEquipActualLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Gestió d'Equip");
@@ -147,7 +159,7 @@ public class EditEquipFrame extends javax.swing.JFrame
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -163,6 +175,8 @@ public class EditEquipFrame extends javax.swing.JFrame
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(enrereButton)
+                        .addGap(265, 265, 265)
+                        .addComponent(nomEquipActualLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(titularCheck)
@@ -175,7 +189,9 @@ public class EditEquipFrame extends javax.swing.JFrame
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(enrereButton)
-                    .addComponent(guardarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(guardarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(nomEquipActualLabel)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -208,16 +224,13 @@ public class EditEquipFrame extends javax.swing.JFrame
         int filaReal = escolliblesTable.convertRowIndexToModel(escollibleSel);
         String jugSel = (String) escolliblesTable.getModel().getValueAt(filaReal, 1); // IdLegal
 
-        Jugador escollit;
-        try 
+        Jugador escollit = Utils.obtenirJugadorPerIdLegal(jugSel);
+        if (escollit == null)
         {
-            escollit = Utils.getGBD().obtenirJugador(jugSel);
-        }
-        catch (GestorBDManagerException ex)
-        {
-            javax.swing.JOptionPane.showMessageDialog(this, ex, "Error de selecció", javax.swing.JOptionPane.ERROR_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(this, "No s'ha pogut obtenir el jugador seleccionat.", "Error de selecció", javax.swing.JOptionPane.ERROR_MESSAGE);
             return;
         }
+
 
         boolean ferTitular = titularCheck.isSelected();
         Membre nouMembre = new Membre();
@@ -228,54 +241,45 @@ public class EditEquipFrame extends javax.swing.JFrame
         // NOMÉS SI ES VOL FER TITULAR
         if (ferTitular)
         {
-            try {
-                Integer equipOnTitular = Utils.getGBD().obtenirEquipOnEsTitular(escollit.getId());
-                if (equipOnTitular != null && equipOnTitular != equipActual) {
-                    int resposta = javax.swing.JOptionPane.showConfirmDialog(this,
-                        "Aquest jugador ja es titular a un altre equip, vols continuar?",
-                        "Atenció", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE);
+            Integer equipOnTitular = Utils.obtenirEquipOnEsTitular(escollit.getId());
+            if (equipOnTitular != null && equipOnTitular != equipActual)
+            {
+                int resposta = javax.swing.JOptionPane.showConfirmDialog(this,
+                    "Aquest jugador ja es titular a un altre equip, vols continuar?",
+                    "Atenció", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE);
 
-                    if (resposta != javax.swing.JOptionPane.YES_OPTION)
-                    {
-                        return;
-                    }
-                    else // Si vol seguir amb el procés el canviem de titular
-                    {
-                        Membre membreAntic = new Membre();
-                        membreAntic.setEquMembre(equipOnTitular);
-                        membreAntic.setJugMembre(escollit.getId());
-                        membreAntic.setTitular(true); // abans era titular
+                if (resposta != javax.swing.JOptionPane.YES_OPTION) 
+                {
+                    return;
+                } 
+                else 
+                {
+                    Membre membreAntic = new Membre();
+                    membreAntic.setEquMembre(equipOnTitular);
+                    membreAntic.setJugMembre(escollit.getId());
+                    membreAntic.setTitular(true);
 
-                        Utils.getGBD().modificarMembre(membreAntic, false); // ara serà convidat
-                    }
+                    Utils.modificarTitularitatMembre(membreAntic, false);
                 }
-            } catch (GestorBDManagerException ex) {
-                javax.swing.JOptionPane.showMessageDialog(this, ex, "Error al comprovar titularitat", javax.swing.JOptionPane.ERROR_MESSAGE);
-                return;
             }
         }
 
         // L'afegim com a membre
-        try 
-        {
-            Utils.getGBD().afegirMembre(nouMembre);
-            Utils.setJugsDinsEquip(equipActual);
-            Utils.setJugsInscriptiblesEquip(equipActual);
-            carregarLlistes();
-        }
-        catch (GestorBDManagerException ex)
+        String error = Utils.afegirMembreEquip(nouMembre, equipActual);
+        if (error != null)
         {
             if (nouMembre.getTitular())
             {
-                javax.swing.JOptionPane.showMessageDialog(this, "No pot ser titular en un equip de categoria diferent!", "Error al afegir jugador", javax.swing.JOptionPane.ERROR_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(this, "No pot ser titular en un equip de categoria diferent!\n" + error, "Error al afegir jugador", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
             else 
             {
-                javax.swing.JOptionPane.showMessageDialog(this, "Un jugador només pot ser convidat en categories iguals o superiors!", "Error al afegir jugador", javax.swing.JOptionPane.ERROR_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(this, "Un jugador només pot ser convidat en categories iguals o superiors!\n" + error, "Error al afegir jugador", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
-            ex.printStackTrace();
             return;
         }
+        carregarLlistes();
+
     }//GEN-LAST:event_afegirJugadorButtonActionPerformed
 
     private void treureJugadorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_treureJugadorButtonActionPerformed
@@ -290,14 +294,10 @@ public class EditEquipFrame extends javax.swing.JFrame
         int filaReal = membresTable.convertRowIndexToModel(membreSel);
         String jugSel = (String) membresTable.getModel().getValueAt(filaReal, 1); // IdLegal
 
-        Jugador membre;
-        try {
-            membre = Utils.getGBD().obtenirJugador(jugSel);
-        }
-        catch (GestorBDManagerException ex)
+        Jugador membre = Utils.obtenirJugadorPerIdLegal(jugSel);
+        if (membre == null)
         {
             javax.swing.JOptionPane.showMessageDialog(this, "No s'ha pogut obtenir el jugador seleccionat.", "Error de selecció", javax.swing.JOptionPane.ERROR_MESSAGE);
-            ex.printStackTrace();
             return;
         }
 
@@ -311,17 +311,13 @@ public class EditEquipFrame extends javax.swing.JFrame
         membreObj.setJugMembre(membre.getId());
         membreObj.setTitular(titular);
 
-        try
+        String error = Utils.eliminarMembreEquip(membreObj, equipActual);
+        if (error != null)
         {
-            Utils.getGBD().eliminarMembre(membreObj);
-            Utils.setJugsDinsEquip(equipActual);
-            Utils.setJugsInscriptiblesEquip(equipActual);
-            carregarLlistes();
+            javax.swing.JOptionPane.showMessageDialog(this, error, "Error al treure jugador", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
         }
-        catch (GestorBDManagerException ex)
-        {
-            javax.swing.JOptionPane.showMessageDialog(this, ex, "Error al treure jugador", javax.swing.JOptionPane.ERROR_MESSAGE);
-        }
+        carregarLlistes();
     }//GEN-LAST:event_treureJugadorButtonActionPerformed
 
     private void enrereButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enrereButtonActionPerformed
@@ -331,16 +327,12 @@ public class EditEquipFrame extends javax.swing.JFrame
     }//GEN-LAST:event_enrereButtonActionPerformed
 
     private void guardarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarButtonActionPerformed
-        try 
+        String error = Utils.confirmarCanvis();
+        if (error != null)
         {
-            Utils.getGBD().confirmarCanvis();
-        }
-        catch (GestorBDManagerException ex)
-        {
-            javax.swing.JOptionPane.showMessageDialog(this, ex, "Error al desar!", javax.swing.JOptionPane.ERROR_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(this, error, "Error al desar!", javax.swing.JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
     }//GEN-LAST:event_guardarButtonActionPerformed
 
     private void carregarLlistes()
@@ -351,15 +343,8 @@ public class EditEquipFrame extends javax.swing.JFrame
 
         for (Jugador membre : Utils.getJugadorsDinsEquip())
         {
-            boolean titular = false;
-            try
-            {
-                titular = Utils.getGBD().esTitular(equipActual, membre.getId());
-            }
-            catch (GestorBDManagerException ex)
-            {
-                // Si peta, el posem com a convidat per defecte
-            }
+            membre.setEdat(Utils.getTemporadaActual().getAnny());
+            boolean titular = Utils.esTitular(equipActual, membre.getId());
             
             String txtTitular;
             if (titular)
@@ -415,6 +400,7 @@ public class EditEquipFrame extends javax.swing.JFrame
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable membresTable;
+    private javax.swing.JLabel nomEquipActualLabel;
     private javax.swing.JCheckBox titularCheck;
     private javax.swing.JButton treureJugadorButton;
     // End of variables declaration//GEN-END:variables

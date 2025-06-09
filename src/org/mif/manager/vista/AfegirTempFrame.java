@@ -4,8 +4,6 @@
  */
 package org.mif.manager.vista;
 
-import org.mif.manager.interficiepersistencia.GestorBDManagerException;
-
 /**
  *
  * @author marks
@@ -115,24 +113,22 @@ public class AfegirTempFrame extends javax.swing.JFrame {
 
     private void afegirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_afegirButtonActionPerformed
         String any = anyTextField.getText();
-        
-        // Ens asegurem que ens pasin exactament 4 digits
+
         if (any.length() == 4 && any.matches("\\d{4}"))
         {
-            try
+            String error = Utils.crearNovaTemporada(any);
+            if (error == null) 
             {
-                Utils.getGBD().crearTemporada(any); // Afegim la temporada
-                Utils.setTemporades(); // Carreguem les temporades de nou
                 SelTempFrame selTempFrame = new SelTempFrame();
                 selTempFrame.setVisible(true);
                 this.dispose();
-            }
-            catch (GestorBDManagerException ex)
+            } 
+            else 
             {
-                errorTextArea.setText(ex.getMessage());
+                errorTextArea.setText(error);
             }
         }
-        else 
+        else
         {
             errorTextArea.setText("Has d'introduir exactament 4 digits!");
         }

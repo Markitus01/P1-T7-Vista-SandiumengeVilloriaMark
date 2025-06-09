@@ -4,10 +4,10 @@
  */
 package org.mif.manager.vista;
 
-import java.time.LocalDate;
+import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.table.DefaultTableModel;
-import org.mif.manager.interficiepersistencia.GestorBDManagerException;
+import javax.swing.table.TableRowSorter;
 import org.mif.manager.model.Categoria;
 import org.mif.manager.model.Equip;
 import org.mif.manager.model.Jugador;
@@ -76,7 +76,6 @@ public class GestJugsFrame extends javax.swing.JFrame {
         editarButton = new javax.swing.JButton();
         afegirButton = new javax.swing.JButton();
         eliminarButon = new javax.swing.JButton();
-        exportarButton = new javax.swing.JButton();
         equipComboBox = new javax.swing.JComboBox<>();
         categoriaLabel = new javax.swing.JLabel();
         sexeLabel1 = new javax.swing.JLabel();
@@ -160,16 +159,6 @@ public class GestJugsFrame extends javax.swing.JFrame {
             }
         });
 
-        exportarButton.setBackground(new java.awt.Color(0, 0, 153));
-        exportarButton.setForeground(new java.awt.Color(255, 255, 255));
-        exportarButton.setText("Exportar Dades");
-        exportarButton.setToolTipText("");
-        exportarButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exportarButtonActionPerformed(evt);
-            }
-        });
-
         equipComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 equipComboBoxActionPerformed(evt);
@@ -197,9 +186,7 @@ public class GestJugsFrame extends javax.swing.JFrame {
                         .addComponent(afegirButton, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(editarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(134, 134, 134)
-                        .addComponent(exportarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 293, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 202, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(eliminarButon, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
@@ -225,7 +212,7 @@ public class GestJugsFrame extends javax.swing.JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(sexeLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(dataNaixComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 32, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -249,12 +236,11 @@ public class GestJugsFrame extends javax.swing.JFrame {
                     .addComponent(dataNaixComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 443, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 239, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(afegirButton, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(eliminarButon, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(editarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(exportarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(editarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -268,19 +254,65 @@ public class GestJugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_enrereButtonActionPerformed
 
     private void eliminarButonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarButonActionPerformed
-        // TODO add your handling code here:
+        int filaSel = jugsTable.getSelectedRow();
+        if (filaSel == -1)
+        {
+            javax.swing.JOptionPane.showMessageDialog(this, "Has de seleccionar un jugador per eliminar!", "Error de selecció", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        int filaReal = jugsTable.convertRowIndexToModel(filaSel);
+        String idLegal = (String) jugsTable.getModel().getValueAt(filaReal, 1);
+
+        String error = Utils.eliminarJugadorSiNoAssignat(idLegal);
+
+        if (error == null)
+        {
+            ((DefaultTableModel) jugsTable.getModel()).removeRow(filaReal);
+            javax.swing.JOptionPane.showMessageDialog(this, "Jugador eliminat correctament.", "Èxit", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        }
+        else
+        {
+            javax.swing.JOptionPane.showMessageDialog(this, error, "Error d'eliminació", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_eliminarButonActionPerformed
 
-    private void exportarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportarButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_exportarButtonActionPerformed
-
     private void editarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editarButtonActionPerformed
-        // TODO add your handling code here:
+        int filaSel = jugsTable.getSelectedRow();
+        if (filaSel == -1)
+        {
+            javax.swing.JOptionPane.showMessageDialog(this, "Has de seleccionar un jugador per poder editar-lo!", "Error de selecció", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int filaReal = jugsTable.convertRowIndexToModel(filaSel);
+        String idLegal = (String) jugsTable.getModel().getValueAt(filaReal, 1); // Segona columna = idLegal
+
+        Jugador jugadorSeleccionat = null;
+        for (Jugador jug : Utils.getJugadors())
+        {
+            if (jug.getIdLegal().equals(idLegal))
+            {
+                jugadorSeleccionat = jug;
+                break;
+            }
+        }
+
+        if (jugadorSeleccionat == null)
+        {
+            javax.swing.JOptionPane.showMessageDialog(this, "No s'ha trobat el jugador seleccionat!", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        AfegirEditJug frameEdita = new AfegirEditJug(jugadorSeleccionat);
+        frameEdita.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_editarButtonActionPerformed
 
     private void afegirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_afegirButtonActionPerformed
-        // TODO add your handling code here:
+        AfegirEditJug frameAfegir = new AfegirEditJug(null);
+        frameAfegir.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_afegirButtonActionPerformed
 
     private void categoriaComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_categoriaComboBoxActionPerformed
@@ -376,6 +408,8 @@ public class GestJugsFrame extends javax.swing.JFrame {
             anyNaixSel = dataNaixComboBox.getSelectedItem().toString();
         }
 
+        List<Membre> membresTemporadaActual = Utils.getMembres();
+
         for (Jugador jug : Utils.getJugadors())
         {
             // Calculem l'edat mínima de totes les categories
@@ -388,12 +422,12 @@ public class GestJugsFrame extends javax.swing.JFrame {
                 }
             }
             int edatJugador = Utils.getTemporadaActual().getAnny().getYear() - jug.getData_naix().getYear();
-            // Saltem si encara no existeix
+            // Saltem si encara no pot participar (o si no havia nascut encara)
             if (edatJugador < edatMinimaCategoria)
             {
                 continue;
             }
-            
+
             boolean cercador = false;
             if (textCerca.isEmpty()
                 || jug.getNom().toLowerCase().contains(textCerca)
@@ -403,10 +437,11 @@ public class GestJugsFrame extends javax.swing.JFrame {
                 cercador = true;
             }
 
-            // Mostrem l'equip al que pertany com a titular
+            // Mostrem l'equip al que pertany com a titular, o si no o es en cap, Convidat, o buit si no hi es ni com a convidat en cap
             String nomEquipTitular = "";
             int idEquipTitular = -1;
-            for (Membre m : Utils.getMembres())
+
+            for (Membre m : membresTemporadaActual)
             {
                 if (m.getJugMembre() == jug.getId() && m.getTitular())
                 {
@@ -414,7 +449,7 @@ public class GestJugsFrame extends javax.swing.JFrame {
                     break;
                 }
             }
-            
+
             if (idEquipTitular != -1)
             {
                 for (Equip eq : Utils.getEquips())
@@ -424,6 +459,22 @@ public class GestJugsFrame extends javax.swing.JFrame {
                         nomEquipTitular = eq.getNom();
                         break;
                     }
+                }
+            }
+            else // Si no és titular, mirem si és convidat
+            {
+                boolean esConvidat = false;
+                for (Membre m : membresTemporadaActual)
+                {
+                    if (m.getJugMembre() == jug.getId())
+                    {
+                        esConvidat = true;
+                        break;
+                    }
+                }
+                if (esConvidat)
+                {
+                    nomEquipTitular = "Convidat";
                 }
             }
 
@@ -477,6 +528,9 @@ public class GestJugsFrame extends javax.swing.JFrame {
                 model.addRow(fila);
             }
         }
+
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>((DefaultTableModel) jugsTable.getModel());
+        jugsTable.setRowSorter(sorter);
     }
 
     
@@ -491,7 +545,6 @@ public class GestJugsFrame extends javax.swing.JFrame {
     private javax.swing.JButton enrereButton;
     private javax.swing.JComboBox<String> equipComboBox;
     private javax.swing.JLabel equipLabel;
-    private javax.swing.JButton exportarButton;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jugsTable;
     private javax.swing.JLabel nomLabel;

@@ -7,8 +7,6 @@ package org.mif.manager.vista;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
-import org.mif.manager.interficiepersistencia.GestorBDManagerException;
-import org.mif.manager.model.Categoria;
 import org.mif.manager.model.Equip;
 import org.mif.manager.model.Jugador;
 
@@ -60,7 +58,6 @@ public class GestEquipsFrame extends javax.swing.JFrame
         jScrollPane1 = new javax.swing.JScrollPane();
         equipsTable = new javax.swing.JTable();
         afegirButton = new javax.swing.JButton();
-        informeJasperButton = new javax.swing.JButton();
         tipusComboBox = new javax.swing.JComboBox<>();
         nomLabel = new javax.swing.JLabel();
         eliminarButton = new javax.swing.JButton();
@@ -114,15 +111,6 @@ public class GestEquipsFrame extends javax.swing.JFrame
             }
         });
 
-        informeJasperButton.setBackground(new java.awt.Color(0, 0, 153));
-        informeJasperButton.setForeground(new java.awt.Color(255, 255, 255));
-        informeJasperButton.setText("Informe amb Jasper");
-        informeJasperButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                informeJasperButtonActionPerformed(evt);
-            }
-        });
-
         tipusComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tots", "Masculí", "Femení", "Mixte" }));
         tipusComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -172,9 +160,7 @@ public class GestEquipsFrame extends javax.swing.JFrame
                         .addComponent(afegirButton, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(editarButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(125, 125, 125)
-                        .addComponent(informeJasperButton, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 237, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(eliminarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -194,7 +180,7 @@ public class GestEquipsFrame extends javax.swing.JFrame
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(categoriaComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(tipusLabel1))))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 124, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -222,7 +208,6 @@ public class GestEquipsFrame extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(afegirButton, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(informeJasperButton, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(eliminarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(editarButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
@@ -242,10 +227,6 @@ public class GestEquipsFrame extends javax.swing.JFrame
         afegirFrame.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_afegirButtonActionPerformed
-
-    private void informeJasperButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_informeJasperButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_informeJasperButtonActionPerformed
 
     private void eliminarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarButtonActionPerformed
         int filaSel = equipsTable.getSelectedRow();
@@ -275,28 +256,18 @@ public class GestEquipsFrame extends javax.swing.JFrame
 
         if (eliminar)
         {
-            try
-            {
-                Utils.getGBD().eliminarMembresEquip(equipId);
-                Equip e = Utils.getGBD().obtenirEquip(equipId);
-                int eliminat = Utils.getGBD().eliminarEquip(e);
+            String error = Utils.eliminarEquipComplet(equipId);
 
-                if (eliminat == 1)
-                {
-                    // Borrem la fila de l'equip que hem eliminat
-                    ((DefaultTableModel)equipsTable.getModel()).removeRow(filaReal);
-
-                    javax.swing.JOptionPane.showMessageDialog(this, "Equip eliminat correctament.", "Èxit", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-                }
-                else
-                {
-                    javax.swing.JOptionPane.showMessageDialog(this, "No s'ha pogut eliminar l'equip.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-                }
-            }
-            catch (GestorBDManagerException ex)
+            if (error == null)
             {
-                javax.swing.JOptionPane.showMessageDialog(this, "Error intern: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                ((DefaultTableModel) equipsTable.getModel()).removeRow(filaReal);
+                javax.swing.JOptionPane.showMessageDialog(this, "Equip eliminat correctament.", "Èxit", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             }
+            else
+            {
+                javax.swing.JOptionPane.showMessageDialog(this, error, "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            }
+
         }
     }//GEN-LAST:event_eliminarButtonActionPerformed
 
@@ -365,18 +336,17 @@ public class GestEquipsFrame extends javax.swing.JFrame
     // Funció per carregar les categories de la BD al combobox
     private void carregarCategoriesComboBox()
     {
-        try
-        {
-            categoriaComboBox.addItem("Totes");
+        categoriaComboBox.removeAllItems();
 
-            for (Categoria c : Utils.getGBD().obtenirCategories())
-            {
-                categoriaComboBox.addItem(c.getNom());
-            }
-        }
-        catch (GestorBDManagerException ex)
+        for (String nomCat : Utils.obtenirNomsCategories())
         {
-            javax.swing.JOptionPane.showMessageDialog(this, "Error carregant categories: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            categoriaComboBox.addItem(nomCat);
+        }
+
+        // Si s'ha carregat l'error a la llista, mostrem un error
+        if ("Error carregant categories".equals(categoriaComboBox.getItemAt(0)))
+        {
+            javax.swing.JOptionPane.showMessageDialog(this, "Error carregant categories.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -385,7 +355,8 @@ public class GestEquipsFrame extends javax.swing.JFrame
     {
         // Obtenim el table model creat automàticament per el disseny
         DefaultTableModel equipsModel = (DefaultTableModel) equipsTable.getModel();
-
+        equipsModel.setRowCount(0); // Ens carreguem la taula per evitar duplicats
+        
         for (Equip equip : Utils.getEquips())
         {
             Object[] row = {
@@ -409,7 +380,6 @@ public class GestEquipsFrame extends javax.swing.JFrame
     private javax.swing.JButton eliminarButton;
     private javax.swing.JButton enrereButton;
     private javax.swing.JTable equipsTable;
-    private javax.swing.JButton informeJasperButton;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel nomLabel;
     private javax.swing.JLabel tempLabel;
